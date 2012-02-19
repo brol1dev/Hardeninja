@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Hardeninja</string>
+
+    <!-- Preferences -->
+    <string name="pref_title">Hardeninja Preferences</string>
+    <string name="pref_cat_tit_sms">SMS Preferences</string>
+    <string name="pref_cat_sum_sms">Configure SMS redirecting</string>
+    
+</resources>
