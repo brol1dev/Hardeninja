@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" >
+    
+	<PreferenceCategory android:title="@string/pref_cat_tit_sms">
+	    
+	    <EditTextPreference android:key="@string/pref_phone_key"
+	        android:title="@string/pref_phone_title"
+	        android:summary="@string/pref_phone_sum"
+	        android:defaultValue="@string/pref_phone_def" 
+	        android:inputType="phone" />
+	    <EditTextPreference android:key="@string/pref_oncode_key"
+	        android:title="@string/pref_oncode_title"
+	        android:summary="@string/pref_oncode_sum"
+	        android:defaultValue="@string/pref_oncode_def" />
+	    <EditTextPreference android:key="@string/pref_offcode_key"
+	        android:title="@string/pref_offcode_title"
+	        android:summary="@string/pref_offcode_sum"
+	        android:defaultValue="@string/pref_offcode_def" />
+	</PreferenceCategory>
+</PreferenceScreen>
