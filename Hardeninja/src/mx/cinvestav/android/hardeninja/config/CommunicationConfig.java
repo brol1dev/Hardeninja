@@ -6,4 +6,6 @@ public class CommunicationConfig {
 			"mx.cinvestav.android.hardeninja.action.BOOT_COMPLETE";
 	public static final String COMMUNICATE_SMS = 
 			"mx.cinvestav.android.hardeninja.action.COMMUNICATE_SMS";
+	public static final String COMMUNICATE_CALL = 
+			"mx.cinvestav.android.hardeninja.action.COMMUNICATE_CALL";
 }

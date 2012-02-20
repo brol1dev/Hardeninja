@@ -66,8 +66,7 @@ public class MessageProcess {
 			}
 			
 			Date date = new Date(sms.getTimestampMillis());
-			SimpleDateFormat dateFormat = new SimpleDateFormat(DATE_FORMAT);
-			smsDate = dateFormat.format(date);
+			smsDate = MessageProcess.getFormatDate(date);
 			
 			smsSrc = sms.getDisplayOriginatingAddress();
 		}
@@ -84,7 +83,7 @@ public class MessageProcess {
 		SmsManager manager = SmsManager.getDefault();
 		
 		StringBuilder bodyBuilder = new StringBuilder();
-		bodyBuilder.append("Message from: " + message.getSrcNumber());
+		bodyBuilder.append("SMS from: " + message.getSrcNumber());
 		bodyBuilder.append(". Date: " + message.getDate());
 		bodyBuilder.append(". Content: " + message.getMsgBody());
 		
@@ -92,5 +91,27 @@ public class MessageProcess {
 				bodyBuilder.toString());
 		for (String part : msgParts)
 			manager.sendTextMessage(destNumber, null, part, null, null);
+	}
+	
+	/**
+	 * Send a SMS to the destination number with the calling number in src
+	 * @param srcNumber
+	 * @param destNumber
+	 */
+	public static void sendSMS(String srcNumber, String destNumber) {
+		SmsManager manager = SmsManager.getDefault();
+		
+		String date = MessageProcess.getFormatDate(new Date());
+		StringBuilder bodyBuilder = new StringBuilder();
+		bodyBuilder.append("Call from: " + srcNumber);
+		bodyBuilder.append(". Date: " + date);
+		
+		manager.sendTextMessage(destNumber, null, bodyBuilder.toString(),
+				null, null);
+	}
+	
+	private static String getFormatDate(Date date) {
+		SimpleDateFormat dateFormat = new SimpleDateFormat(DATE_FORMAT);
+		return dateFormat.format(date);
 	}
 }

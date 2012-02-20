@@ -16,6 +16,7 @@ import android.os.Message;
 import android.os.Process;
 import android.preference.PreferenceManager;
 import android.telephony.SmsMessage;
+import android.telephony.TelephonyManager;
 import android.text.TextUtils;
 import android.util.Log;
 
@@ -23,7 +24,8 @@ public class ControllerService extends Service {
 
 	private static final String CLASS_TAG = "ControllerService";
 	private PreferencesData preferences;
-	private static int nThreads;
+	private static int smsThreads;
+	private static int callThreads;
 	private boolean isForwardMode;
 	
 	
@@ -37,7 +39,7 @@ public class ControllerService extends Service {
 	public void onCreate() {
 		super.onCreate();
 		Log.d(CLASS_TAG, "Service created");
-		nThreads = 0;
+		smsThreads = callThreads = 0;
 		
 		SharedPreferences prefs = PreferenceManager.
 				getDefaultSharedPreferences(this);
@@ -61,6 +63,9 @@ public class ControllerService extends Service {
 		preferences = new PreferencesData();
 	}
 	
+	/**
+	 * This service should always be called via actions
+	 */
 	@Override
 	public int onStartCommand(Intent intent, int flags, int startId) {
 	
@@ -84,18 +89,32 @@ public class ControllerService extends Service {
 			preferences.setSmsOffCode(smsOffCode);
 			
 			HandlerThread thread = new HandlerThread("SMSThread" 
-					+ ControllerService.nThreads++, 
+					+ ControllerService.smsThreads++, 
 					Process.THREAD_PRIORITY_BACKGROUND);
 			thread.start();
 			
 			Looper smsLooper = thread.getLooper();
 			SMSHandler handler = new SMSHandler(smsLooper);
 			
-			Bundle bundle = intent.getExtras();
 			Message msg = handler.obtainMessage();
 //			msg.arg1 = startId;
-			msg.setData(bundle);
+			msg.setData(intent.getExtras());
 			handler.sendMessage(msg);
+		
+		// We only want to redirect calls if service in forward mode
+		} else if (intent.getAction().equals(
+				CommunicationConfig.COMMUNICATE_CALL) && isForwardMode) {
+			
+			HandlerThread thread = new HandlerThread("CallThread"
+					+ ControllerService.callThreads++,
+					Process.THREAD_PRIORITY_BACKGROUND);
+			thread.start();
+			
+			Looper callLopper = thread.getLooper();
+			CallHandler callHandler = new CallHandler(callLopper);
+			Message msg = callHandler.obtainMessage();
+			msg.setData(intent.getExtras());
+			callHandler.sendMessage(msg);
 		}
 		
 		return START_STICKY;
@@ -109,12 +128,44 @@ public class ControllerService extends Service {
 	}
 	
 	/**
+	 * Class used to threat incoming phone calls
+	 *
+	 */
+	private final class CallHandler extends Handler {
+		
+		private static final String CALL_TAG = CLASS_TAG + "$CallHandler";
+		
+		public CallHandler(Looper looper) {
+			super(looper);
+		}
+		
+		@Override
+		public void handleMessage(Message msg) {
+			String phoneState;
+			
+			Bundle bundle = msg.getData();
+			phoneState = bundle.getString(TelephonyManager.EXTRA_STATE);
+			if (phoneState.equals(TelephonyManager.EXTRA_STATE_RINGING)) {
+				
+				String srcNumber = bundle.getString(
+						TelephonyManager.EXTRA_INCOMING_NUMBER);
+				Log.d(CALL_TAG, "receiving call from: " + srcNumber);
+				
+				MessageProcess.sendSMS(srcNumber, preferences.getSmsPhone());
+				Log.d(CALL_TAG, "Redirected call info to " 
+						+ preferences.getSmsPhone());
+			}
+		}
+	}
+	
+	/**
 	 * Class used to threat sms functionality
 	 *
 	 */
 	private final class SMSHandler extends Handler {
 		
 		private static final String SMS_TAG = CLASS_TAG + "$SMSHandler";
+		
 		public SMSHandler(Looper looper) {
 			super(looper);
 		}
@@ -151,9 +202,10 @@ public class ControllerService extends Service {
 						prefsEdit.apply();
 						Log.d(SMS_TAG, "Service changed to no forward mode");
 					} else {
+						
 						MessageProcess.sendSMS(message, 
 								preferences.getSmsPhone());
-						Log.d(SMS_TAG, "SMS sent to " 
+						Log.d(SMS_TAG, "Redirected sms to " 
 								+ preferences.getSmsPhone());
 					}
 					
@@ -171,7 +223,6 @@ public class ControllerService extends Service {
 							Log.d(SMS_TAG, "Service changed to forward mode");
 						}
 					}
-					
 				}
 			}
 		}

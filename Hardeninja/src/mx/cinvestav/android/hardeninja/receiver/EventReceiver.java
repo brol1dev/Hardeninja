@@ -49,13 +49,20 @@ public class EventReceiver extends BroadcastReceiver {
 			this.processSMS(context, bundle);
 		
 		} else if (intent.getAction().equals(PHONE_STATE)) {
-			
+			Bundle bundle = intent.getExtras();
+			this.processCall(context, bundle);
 		}
 		
 	}
 
 	private void processSMS(Context context, Bundle bundle) {
 		Intent intent = new Intent(CommunicationConfig.COMMUNICATE_SMS);
+		intent.putExtras(bundle);
+		context.startService(intent);
+	}
+	
+	private void processCall(Context context, Bundle bundle) {
+		Intent intent = new Intent(CommunicationConfig.COMMUNICATE_CALL);
 		intent.putExtras(bundle);
 		context.startService(intent);
 	}

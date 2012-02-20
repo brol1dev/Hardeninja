@@ -36,6 +36,7 @@
             <intent-filter>
                 <action android:name="mx.cinvestav.android.hardeninja.action.BOOT_COMPLETE" />
                 <action android:name="mx.cinvestav.android.hardeninja.action.COMMUNICATE_SMS" />
+                <action android:name="mx.cinvestav.android.hardeninja.action.COMMUNICATE_CALL"/>
             </intent-filter>
         </service>
         
