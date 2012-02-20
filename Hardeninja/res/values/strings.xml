@@ -3,8 +3,20 @@
     <string name="app_name">Hardeninja</string>
 
     <!-- Preferences -->
-    <string name="pref_title">Hardeninja Preferences</string>
-    <string name="pref_cat_tit_sms">SMS Preferences</string>
-    <string name="pref_cat_sum_sms">Configure SMS redirecting</string>
+    <string name="pref_title">Hardeninja</string>
+    <string name="pref_cat_tit_sms">SMS/Calls Forwarding</string>
+    <string name="pref_phone_key">pref_phone</string>
+    <string name="pref_phone_title">SMS to Number</string>
+    <string name="pref_phone_sum">Phone number to forward your SMS\'s and
+        calls</string>
+    <string name="pref_phone_def">5556</string>
+    <string name="pref_oncode_key">pref_oncode</string>
+    <string name="pref_oncode_title">Forward Enable Code</string>
+    <string name="pref_oncode_sum">Code received in SMS to enable forwarding</string>
+    <string name="pref_oncode_def">forward</string>
+    <string name="pref_offcode_key">pref_offcode</string>
+    <string name="pref_offcode_title">Forward Disable Code</string>
+    <string name="pref_offcode_sum">Code received in SMS to disable forwarding</string>
+    <string name="pref_offcode_def">disable</string>
     
 </resources>
